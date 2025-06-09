@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Git Clone') {
+            steps {
+                git 'https://github.com/Zulaikha12/sample-spring-microservices'
+            }
+        }
+        
+        stage('Build Account-Service') {
+            steps {
+                dir('customer-service') {
+                    sh 'mvn clean install'
+                }
+            }
+        }
+        
+        stage('Docker Image') {
+            steps {
+                dir('customer-service') {
+                    sh 'sudo docker build -t customerserv:latest .'
+                }
+            }
+        }
+        
+        stage('Docker push') {
+            steps {
+                    sh 'sudo docker tag customerserv:latest nithi17/customerserv:latest'
+                    sh 'sudo docker push nithi17/customerserv:latest'
+            }
+        }
+    }
+}
